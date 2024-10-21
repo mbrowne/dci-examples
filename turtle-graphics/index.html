@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turtle Graphics Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .turtle {
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            cursor: normal;
+            top: calc(50% - 80px);
+            left: calc(50% - 80px);
+        }
+    </style>
+    <script src="index.js" type="module" defer></script>
+</head>
+<body>
+    <img id="turtle" class="turtle" src="turtle-svg/01.svg" alt="turtle" width="80">
+</body>
+</html>
