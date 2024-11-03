@@ -32,28 +32,65 @@ export function LinearMotionPhysics(body) {
         },
 
         /**
-         * @param {Vector2D} destinationPos 
+         * @param {Vector2D} destinationPos
+         * @param {number} speed
          */
-        goToDestination(destinationPos) {
+        goToDestination(destinationPos, speed) {
             destinationPosition = Object.assign(destinationPos, roleMethods.destinationPosition)
-            currentPosition.moveToDestination()
+            currentPosition.moveToDestination(speed)
         }
     }
 
     function roles() {
         return {
+            /**
+             * @contract {{
+             *     add(vector: Vector2D): Vector2D
+             *     get x(): number
+             *     get y(): number
+             * }}
+             */
             currentPosition: {
-                moveToDestination() {
-                    // Kudos to this article for an intro to the math used here:
+                /**
+                 * @param {number} speed 
+                 */
+                moveToDestination(speed) {
+                    // Kudos to this article for an intro to the math used in this method:
                     // https://www.gamedev.net/tutorials/programming/math-and-physics/vector-maths-for-game-dev-beginners-r5442/
-                    const movementDirectionVector = destinationPosition.subtractVector(this).normalize()
-                    body.changePosition( this.add(movementDirectionVector.multiply(100)) )
+
+                    const vectorBetweenPositions = destinationPosition.subtractVector(currentPosition)
+                    const totalDistanceToMove = vectorBetweenPositions.magnitude
+
+                    const movementDirectionVector = vectorBetweenPositions.normalize()
+
+                    let prevTimestamp = 0
+                    let distanceMoved = 0
+
+                    const animate = (timestamp) => {
+                        const timeDelta = prevTimestamp === 0 ? 0: timestamp - prevTimestamp
+
+                        const remainingDistance = totalDistanceToMove - distanceMoved
+                        const distanceToMove = Math.min((timeDelta / 1000) * speed, remainingDistance)
+
+                        body.changePosition( currentPosition.add(movementDirectionVector.multiply(distanceToMove)) )
+
+                        distanceMoved += distanceToMove
+
+                        if (distanceMoved < totalDistanceToMove) {
+                            prevTimestamp = timestamp
+                            window.requestAnimationFrame(animate)
+                        }
+                    }
+
+                    window.requestAnimationFrame(animate)
                 }
             },
             
             /**
              * @contract {{
              *     subtract(vector: Vector2D): Vector2D
+             *     get x(): number
+             *     get y(): number
              * }}
              */
             destinationPosition: {

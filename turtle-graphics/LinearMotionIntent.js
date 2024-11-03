@@ -1,7 +1,7 @@
 import { LinearMotionPhysics } from './LinearMotionPhysics.js'
 import { Body2D } from './Body2D.js'
 
-const DEFAULT_SPEED = 1
+const DEFAULT_SPEED = 300
 
 /**
  * @type {{
@@ -16,10 +16,10 @@ let RolePlayerContract_linearMotionPhysics
  * How the user or animator intends to move the Body
  * 
  * @param {Body2D} body
- * @param {(body: Body2D) => RolePlayerContract_linearMotionPhysics} PhysicsContextDeclaration 
+ * @param {(body: Body2D) => RolePlayerContract_linearMotionPhysics} physicsContextDeclaration 
  */
-export function LinearMotionIntent(body, PhysicsContextDeclaration = LinearMotionPhysics) {
-    const physicsContext = new PhysicsContextDeclaration(body)
+export function LinearMotionIntent(body, physicsContextDeclaration = LinearMotionPhysics, speed = DEFAULT_SPEED) {
+    const physicsContext = new physicsContextDeclaration(body)
 
     const roleMethods = roles()
     body = Object.assign(body, roleMethods.body)
@@ -31,15 +31,15 @@ export function LinearMotionIntent(body, PhysicsContextDeclaration = LinearMotio
          */
         rotateAndMoveToDestination(destinationPosition) {
             // TODO rotate
-            linearMotionPhysics.moveToDestination(destinationPosition)
+            linearMotionPhysics.moveToDestination(destinationPosition, speed)
         },
 
         forward(distance) {
-            body.moveAtCurrentAngle(distance)
+            body.moveAtCurrentAngle(distance, speed)
         },
 
         backward(distance) {
-            linearMotionPhysics.move(body.rotation + Math.PI, distance)
+            linearMotionPhysics.move(body.rotation + Math.PI, distance, speed)
         },
     
         // backward(distance) {
@@ -65,8 +65,8 @@ export function LinearMotionIntent(body, PhysicsContextDeclaration = LinearMotio
              * }}
              */
             body: {
-                moveAtCurrentAngle(distance) {
-                    linearMotionPhysics.move(this.rotation, distance)
+                moveAtCurrentAngle(distance, speed) {
+                    linearMotionPhysics.move(this.rotation, distance, speed)
                 },
 
                 rotate(angleInDegrees) {
@@ -82,12 +82,12 @@ export function LinearMotionIntent(body, PhysicsContextDeclaration = LinearMotio
              * @contract {RolePlayerContract_linearMotionPhysics}
              */
             linearMotionPhysics: {
-                move(angleInRadians, distance, speed = DEFAULT_SPEED) {
+                move(angleInRadians, distance, speed) {
                     this.goToward(angleInRadians, distance, speed)
                 },
 
-                moveToDestination(destinationPosition) {
-                    this.goToDestination(destinationPosition)
+                moveToDestination(destinationPosition, speed) {
+                    this.goToDestination(destinationPosition, speed)
                 }
             },
         }

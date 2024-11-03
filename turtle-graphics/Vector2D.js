@@ -75,4 +75,11 @@ export class Vector2D {
         const magnitude = this.magnitude
         return new Vector2D(this.#x / magnitude, this.#y / magnitude)
     }
+
+    toJSON() {
+        return {
+            x: this.#x,
+            y: this.#y
+        }
+    }
 }

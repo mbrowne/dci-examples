@@ -9,14 +9,12 @@ const windowWidth = window.innerWidth
 
 // start at the center
 const { width, height } = turtleElem.getBoundingClientRect()
+const startingPosition = new Vector2D((windowWidth / 2) - width, (windowHeight / 2) - height)
+
+turtleElem.style.left = startingPosition.x + 'px';
+turtleElem.style.top = startingPosition.y + 'px';
+
 const offsetForClickEvent = width / 2
-const startingPosition = new Vector2D(windowHeight / 2 - width, windowWidth / 2 - height)
-
-// console.log('startingPosition.angle', startingPosition.angle)
-// console.log('startingPosition.magnitude', startingPosition.magnitude)
-
-turtleElem.style.top = startingPosition.x + 'px';
-turtleElem.style.left = startingPosition.y + 'px';
 
 const turtle = new Body2D({
     position: startingPosition,
@@ -51,20 +49,7 @@ const linearMotionIntent = new LinearMotionIntent(turtleView)
 document.body.addEventListener('click', (event) => {
     // interpret mouse click as where the user wants the *center* of the turtle to go
     const destinationPosition = new Vector2D(event.clientX - offsetForClickEvent, event.clientY - offsetForClickEvent)
-    // console.log('targetPosition.angle', targetPosition.angle)
 
     linearMotionIntent.rotateAndMoveToDestination(destinationPosition)
-
-
-    // Kudos to this article for an intro to the math used here:
-    // https://www.gamedev.net/tutorials/programming/math-and-physics/vector-maths-for-game-dev-beginners-r5442/
-
-    // const movementDirectionVector = destinationPosition.subtract(turtle.position).normalize()
-    // console.log('movementDirectionVector', movementDirectionVector)
-    // turtleView.position = turtle.position.add(movementDirectionVector.multiply(300))    
-
-    // setTimeout(() => {
-    //     turtleView.position = turtle.position.add(movementDirectionVector.multiply(300))
-    // }, 500);
 })
 
