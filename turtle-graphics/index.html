@@ -19,7 +19,7 @@
             background-color: #f0f0f0;
         }
 
-        .toolbar {
+        game-toolbar {
             flex: 0;
             background-color: white;
             border-top: 1px solid lightgray;
@@ -44,10 +44,26 @@
     <template id="turtle-svg-template">
         <img class="turtle" src="turtle-svg/01.svg" alt="turtle" width="80">
     </template>
-    <div class="game-container">
-    </div>
-    <div class="toolbar">
-        <button type="button" id="forward">Forward</button>
-    </div>
+    <div class="game-container"></div>
+
+    <game-toolbar>
+        <form>
+            <fieldset>
+                <label>
+                    Distance
+                    <input type="number" name="distance" step="1" min="0" max="10000" value="100" />
+                </label>
+                <button type="button" name="forwardBtn">Forward</button>
+                <button type="button" name="backwardBtn">Backward</button>
+            </fieldset>
+            <fieldset>
+                <label>
+                    Degrees to rotate
+                    <input type="number" name="rotation" step="1" min="0" max="360" value="0" />
+                </label>
+                <button type="button" name="rotateBtn">Rotate</button>
+            </fieldset>
+        </form>
+    </game-toolbar>
 </body>
 </html>

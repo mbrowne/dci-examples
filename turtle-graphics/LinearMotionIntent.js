@@ -1,11 +1,12 @@
 import { LinearMotionPhysics } from './LinearMotionPhysics.js'
 import { Body2D } from './Body2D.js'
+import { degreesToRadians } from './utils.js'
 
 const DEFAULT_SPEED = 200
 
 /**
  * @type {{
- *     goToward(angleInRadians: number, distance: number, speed: number): void
+ *     move(angleInRadians: number, distance: number, speed: number): void
  *     goToDestination(destinationPosition: Vector2D): void
  * }}
  */
@@ -35,17 +36,12 @@ export function LinearMotionIntent(body, physicsContextDeclaration = LinearMotio
         },
 
         forward(distance) {
-            body.moveAtCurrentAngle(distance, speed)
+            linearMotionPhysics.moveForward(distance, speed)
         },
 
         backward(distance) {
-            linearMotionPhysics.move(body.rotation + Math.PI, distance, speed)
+            linearMotionPhysics.moveBackward(distance, speed)
         },
-    
-        // backward(distance) {
-        //     body.reverseDirection()
-        //     body.move(distance)
-        // },
     
         rotateClockwise(angleInDegrees) {
             body.rotate(angleInDegrees)
@@ -65,25 +61,27 @@ export function LinearMotionIntent(body, physicsContextDeclaration = LinearMotio
              * }}
              */
             body: {
-                moveAtCurrentAngle(distance, speed) {
-                    linearMotionPhysics.move(this.rotation, distance, speed)
+                getRotation() {
+                    return this.rotation
                 },
-
+                
                 rotate(angleInDegrees) {
-                    this.rotation += convertToRadians(angleInDegrees)
+                    this.rotation += degreesToRadians(angleInDegrees)
                 },
-
-                // reverseDirection() {
-                //     this.rotation += Math.PI
-                // }
             },
 
             /**
              * @contract {RolePlayerContract_linearMotionPhysics}
              */
             linearMotionPhysics: {
-                move(angleInRadians, distance, speed) {
-                    this.goToward(angleInRadians, distance, speed)
+                moveForward(distance, speed) {
+                    const bearing = body.getRotation() - (Math.PI / 2)
+                    linearMotionPhysics.move(bearing, distance, speed)
+                },
+
+                moveBackward(distance, speed) {
+                    const bearing = body.getRotation() + (Math.PI / 2)
+                    linearMotionPhysics.move(bearing, distance, speed)
                 },
 
                 moveToDestination(destinationPosition, speed) {

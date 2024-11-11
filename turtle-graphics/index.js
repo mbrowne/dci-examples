@@ -2,6 +2,7 @@ import { Vector2D } from './Vector2D.js'
 import { Body2D } from './Body2D.js'
 import { LinearMotionIntent } from './LinearMotionIntent.js'
 import * as renderFunctions from './render-body.js'
+import { GameToolbarComponent } from './GameToolbarComponent.js'
 
 const turtleSvgTemplate = document.getElementById('turtle-svg-template')
 const gameContainer = document.querySelector('.game-container')
@@ -11,13 +12,13 @@ const containerWidth = gameContainer.clientWidth
 const containerHeight = gameContainer.clientHeight
 
 const turtle = new Body2D({
-    bearing: 0,
+    rotation: 0,
     shape: turtleSvgTemplate
 })
 
 const turtleSvg = renderFunctions.createAndAttachSvgElem(turtle, gameContainer)
-const { width, height } = turtleSvg.getBoundingClientRect()
 
+const { width, height } = turtleSvg.getBoundingClientRect()
 const startingPosition = new Vector2D(
     (containerWidth / 2) - (width / 2),
     (containerHeight / 2) - (height / 2)
@@ -37,9 +38,10 @@ const turtleProxy = new Proxy(turtle, {
                 renderFunctions.updatePosition(turtle, turtleSvg)
                 return true
             }
-            case 'bearing': {
-                target.bearing = value
-                renderFunctions.updateBearing(turtle, turtleSvg)
+            case 'rotation': {
+                target.rotation = value
+                // gameToolbar.updateRotationValue( radiansToDegrees(value).toFixed(2) )
+                renderFunctions.rotate(turtle, turtleSvg)
                 return true
             }
         }
@@ -49,6 +51,10 @@ const turtleProxy = new Proxy(turtle, {
 
 const linearMotionIntent = new LinearMotionIntent(turtleProxy)
 // linearMotionIntent.forward(10)
+
+customElements.define('game-toolbar', GameToolbarComponent)
+const gameToolbar = document.querySelector('game-toolbar')
+gameToolbar.linearMotionIntent = linearMotionIntent
 
 // Note: this example is *not* meant to demonstrate the best or most performant way
 // to do animations in the browser. It's just a proof-of-concept.

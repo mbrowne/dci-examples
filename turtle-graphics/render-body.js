@@ -13,9 +13,9 @@ export function createAndAttachSvgElem({ shape }, gameContainer) {
  * @param {HTMLElement} svg
  * @param {HTMLElement} gameContainer
  */
-export function initialRender({ position, bearing }, svg, gameContainer) {
+export function initialRender({ position, rotation }, svg, gameContainer) {
     updatePosition({ position }, svg)
-    updateBearing({ bearing }, svg)
+    rotate({ rotation }, svg)
 }
 
 /**
@@ -31,6 +31,6 @@ export function updatePosition({ position }, svg) {
  * @param {Body2D} body
  * @param {HTMLElement} svg
  */
-export function updateBearing({ bearing }, svg) {
-    svg.style.rotate = bearing + 'rad'
+export function rotate({ rotation }, svg) {
+    svg.style.rotate = rotation + 'rad'
 }
