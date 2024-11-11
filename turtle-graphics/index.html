@@ -6,24 +6,48 @@
     <title>Turtle Graphics Demo</title>
     <style>
         body {
+            display: flex;
+            flex-direction: column;
             margin: 0;
             padding: 0;
             height: 100vh;
+        }
+
+        .game-container {
+            position: relative;
+            flex: 1;
             background-color: #f0f0f0;
+        }
+
+        .toolbar {
+            flex: 0;
+            background-color: white;
+            border-top: 1px solid lightgray;
+            padding: 1rem 0 3rem;
+            text-align: center;
+            width: 100%;
+            z-index: 1;
         }
 
         .turtle {
             width: 80px;
             height: 80px;
             position: absolute;
-            cursor: normal;
-            top: calc(50% - 80px);
-            left: calc(50% - 80px);
+            cursor: default;
+            top: calc(50% - 40px);
+            left: calc(50% - 40px);
         }
     </style>
     <script src="index.js" type="module" defer></script>
 </head>
 <body>
-    <img id="turtle" class="turtle" src="turtle-svg/01.svg" alt="turtle" width="80">
+    <template id="turtle-svg-template">
+        <img class="turtle" src="turtle-svg/01.svg" alt="turtle" width="80">
+    </template>
+    <div class="game-container">
+    </div>
+    <div class="toolbar">
+        <button type="button" id="forward">Forward</button>
+    </div>
 </body>
 </html>

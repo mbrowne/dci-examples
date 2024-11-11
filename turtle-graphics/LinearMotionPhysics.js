@@ -62,6 +62,20 @@ export function LinearMotionPhysics(body) {
                     const totalDistanceToMove = vectorBetweenPositions.magnitude
 
                     const movementDirectionVector = vectorBetweenPositions.normalize()
+                    
+                    function angleBetween(v1, v2) {
+                        const dotProduct = v1.x * v2.x + v1.y * v2.y;                      
+                        const cosTheta = dotProduct / (v1.magnitude * v2.magnitude);
+                        return Math.acos(cosTheta);
+                    }
+
+                    // TODO
+                    // if we in fact need to call this.normalize(), it should be added
+                    // to the role contract
+                    // const angle = angleBetween(this.normalize(), movementDirectionVector)
+                    const angle = movementDirectionVector.angle + (Math.PI / 2)
+                    console.log('angle: ', angle);
+                    body.changeAngle(angle)
 
                     let prevTimestamp = 0
                     let distanceMoved = 0
@@ -109,6 +123,10 @@ export function LinearMotionPhysics(body) {
              * }}
              */
             body: {
+                changeAngle(angleInRadians) {
+                    this.angle = angleInRadians
+                },
+
                 changePosition(newPosition) {
                     this.position = newPosition
                     

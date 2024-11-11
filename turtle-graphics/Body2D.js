@@ -9,12 +9,12 @@ export class Body2D {
      */
     angle
     /**
-     * @type {Shape}
+     * @type {HTMLTemplateElement}
      */
     #shape
 
     /**
-     * @param {{ position: Vector2D, angle: number, shape: Shape }} args
+     * @param {{ position: Vector2D, angle: number, shape: HTMLTemplateElement }} args
      */
     constructor({ position, angle, shape }) {
         this.position = position
