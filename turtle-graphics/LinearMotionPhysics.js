@@ -39,10 +39,6 @@ export function LinearMotionPhysics(body) {
             movementDirection = currentPosition.changeAngle(angleInRadians).normalize()
             Object.assign(movementDirection, roleMethods.movementDirection)
 
-            // destinationPosition = currentPosition.addDistance(distance)
-            // Object.assign(destinationPosition, roleMethods.destinationPosition)
-            // console.log('destinationPosition: ', destinationPosition);
-
             currentPosition.animateMovement(distance, speed)
         },
 
@@ -54,9 +50,8 @@ export function LinearMotionPhysics(body) {
         rotateTowardDestination(destinationPos) {
             // bind role
             destinationPosition = Object.assign(destinationPos, roleMethods.destinationPosition)
-            
-            const vectorAngle = destinationPosition.vectorToDestination().angle
-            body.changeRotation(vectorAngle + (Math.PI / 2))
+
+            body.rotateTowardDestination()
         },
 
         /**
@@ -89,10 +84,10 @@ export function LinearMotionPhysics(body) {
                  * @param {number} speed 
                  */
                 moveToDestination(speed) {
-                    this.animateMovement( destinationPosition.totalDistanceToMove(), speed )
+                    this.animateLinearMovement( destinationPosition.totalDistanceToMove(), speed )
                 },
 
-                animateMovement(totalDistanceToMove, speed) {
+                animateLinearMovement(totalDistanceToMove, speed) {
                     let prevTimestamp = 0
                     let distanceMoved = 0
 
@@ -102,8 +97,7 @@ export function LinearMotionPhysics(body) {
                         const remainingDistance = totalDistanceToMove - distanceMoved
                         const distanceToMove = Math.min((timeDelta / 1000) * speed, remainingDistance)
 
-                        body.changePosition( this.addDistance(distanceToMove) )
-
+                        body.changePosition( movementDirection.calculateNextPosition(distanceToMove) )
                         distanceMoved += distanceToMove
 
                         if (distanceMoved < totalDistanceToMove) {
@@ -167,8 +161,9 @@ export function LinearMotionPhysics(body) {
              * }}
              */
             body: {
-                changeRotation(rotationInRadians) {
-                    this.rotation = rotationInRadians
+                rotateTowardDestination() {
+                    const vectorAngle = destinationPosition.vectorToDestination().angle
+                    this.rotation = vectorAngle + (Math.PI / 2)
                 },
 
                 changePosition(newPosition) {
