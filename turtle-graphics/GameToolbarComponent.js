@@ -15,18 +15,35 @@ export class GameToolbarComponent extends HTMLElement {
         form.forwardBtn.addEventListener('click', this.#forwardClicked)
         form.backwardBtn.addEventListener('click', this.#backwardClicked)
         form.rotateBtn.addEventListener('click', this.#rotateClicked)
+        form.distance.addEventListener('change', this.#distanceChanged)
         this.#form = form
     }
 
     #forwardClicked = () => {
-        this.linearMotionIntent.forward(this.#form.distance.value)
+        const distance = this.#form.distance.value
+        if (distance != '') {
+            this.linearMotionIntent.forward(distance)
+        }
     }
 
     #backwardClicked = () => {
-        this.linearMotionIntent.backward(this.#form.distance.value)
+        const distance = this.#form.distance.value
+        if (distance != '') {
+            this.linearMotionIntent.backward(distance)
+        }
     }
 
     #rotateClicked = () => {
-        this.linearMotionIntent.rotateClockwise(this.#form.rotation.value)
+        const rotation = this.#form.rotation.value
+        if (rotation != '') {
+            this.linearMotionIntent.rotateClockwise(rotation)
+        }
+    }
+
+    #distanceChanged = ({ target }) => {
+        // no negative numbers
+        if (parseInt(target.value) < 0) {
+            target.value = 0
+        }
     }
 }
