@@ -11,13 +11,12 @@ const containerWidth = gameContainer.clientWidth
 const containerHeight = gameContainer.clientHeight
 
 const turtle = new Body2D({
-    angle: 0,
+    bearing: 0,
     shape: turtleSvgTemplate
 })
 
-const turtleSvg = renderFunctions.createSvgElem(turtle, gameContainer)
+const turtleSvg = renderFunctions.createAndAttachSvgElem(turtle, gameContainer)
 const { width, height } = turtleSvg.getBoundingClientRect()
-console.log('width, height: ', width, height);
 
 const startingPosition = new Vector2D(
     (containerWidth / 2) - (width / 2),
@@ -38,9 +37,9 @@ const turtleProxy = new Proxy(turtle, {
                 renderFunctions.updatePosition(turtle, turtleSvg)
                 return true
             }
-            case 'angle': {
-                target.angle = value
-                renderFunctions.updateAngle(turtle, turtleSvg)
+            case 'bearing': {
+                target.bearing = value
+                renderFunctions.updateBearing(turtle, turtleSvg)
                 return true
             }
         }

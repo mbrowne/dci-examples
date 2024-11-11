@@ -4,21 +4,21 @@ export class Body2D {
      */
     position
     /**
-     * Angle in radians
+     * bearing relative to up/north (AKA absolute bearing) as an angle in radians
      * @type {number}
      */
-    angle
+    bearing
     /**
      * @type {HTMLTemplateElement}
      */
     #shape
 
     /**
-     * @param {{ position: Vector2D, angle: number, shape: HTMLTemplateElement }} args
+     * @param {{ position: Vector2D, bearing: number, shape: HTMLTemplateElement }} args
      */
-    constructor({ position, angle, shape }) {
+    constructor({ position, bearing, shape }) {
         this.position = position
-        this.angle = angle
+        this.bearing = bearing
         this.#shape = shape
     }
     

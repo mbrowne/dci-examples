@@ -1,7 +1,7 @@
 import { LinearMotionPhysics } from './LinearMotionPhysics.js'
 import { Body2D } from './Body2D.js'
 
-const DEFAULT_SPEED = 300
+const DEFAULT_SPEED = 200
 
 /**
  * @type {{
@@ -30,7 +30,7 @@ export function LinearMotionIntent(body, physicsContextDeclaration = LinearMotio
          * @param {Vector} destination 
          */
         rotateAndMoveToDestination(destinationPosition) {
-            // TODO rotate
+            linearMotionPhysics.rotateTowardDestination(destinationPosition)
             linearMotionPhysics.moveToDestination(destinationPosition, speed)
         },
 
