@@ -8,6 +8,7 @@
         body {
             display: flex;
             flex-direction: column;
+            font-family: sans-serif;
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -19,16 +20,6 @@
             background-color: #f0f0f0;
         }
 
-        game-toolbar {
-            flex: 0;
-            background-color: white;
-            border-top: 1px solid lightgray;
-            padding: 1rem 0 3rem;
-            text-align: center;
-            width: 100%;
-            z-index: 1;
-        }
-
         .turtle {
             width: 80px;
             height: 80px;
@@ -37,6 +28,31 @@
             top: calc(50% - 40px);
             left: calc(50% - 40px);
         }
+
+        button, input {
+            font-size: 1rem;
+        }
+
+        game-toolbar {
+            flex: 0;
+            background-color: white;
+            border-top: 1px solid lightgray;
+            text-align: center;
+            width: 100%;
+            z-index: 1;
+
+            form {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            fieldset {
+                border: none;
+                border-bottom: 1px solid lightgray;
+                padding-block: 1rem;
+            }
+        }
+
     </style>
     <script src="index.js" type="module" defer></script>
 </head>
@@ -62,8 +78,8 @@
                 </label>
                 <button type="button" name="rotateBtn">Rotate</button>
             </fieldset>
-            <p>...or just click on the background to move the turtle to a new location</p>
         </form>
+        <p>...or just click on the background to move the turtle</p>
     </game-toolbar>
 </body>
 </html>
