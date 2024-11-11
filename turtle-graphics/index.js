@@ -1,10 +1,10 @@
 import { Vector2D } from './Vector2D.js'
 import { Body2D } from './Body2D.js'
 import { LinearMotionIntent } from './LinearMotionIntent.js'
-import * as renderFunctions from './render-body.js'
+import { RenderBody2D } from './RenderBody2D.js'
 import { GameToolbarComponent } from './GameToolbarComponent.js'
 
-const turtleSvgTemplate = document.getElementById('turtle-svg-template')
+const turtleSvg = document.getElementById('turtle')
 const gameContainer = document.querySelector('.game-container')
 
 // start at the center
@@ -13,10 +13,8 @@ const containerHeight = gameContainer.clientHeight
 
 const turtle = new Body2D({
     rotation: 0,
-    shape: turtleSvgTemplate
+    shape: turtleSvg
 })
-
-const turtleSvg = renderFunctions.createAndAttachSvgElem(turtle, gameContainer)
 
 const { width, height } = turtleSvg.getBoundingClientRect()
 const startingPosition = new Vector2D(
@@ -26,7 +24,9 @@ const startingPosition = new Vector2D(
 
 turtle.position = startingPosition
 
-renderFunctions.initialRender(turtle, turtleSvg, gameContainer)
+const renderer = RenderBody2D(turtle)
+renderer.renderPosition()
+renderer.renderRotation()
 
 const offsetForClickEvent = width / 2
 
@@ -35,13 +35,12 @@ const turtleProxy = new Proxy(turtle, {
         switch (key) {
             case 'position': {
                 target.position = value
-                renderFunctions.updatePosition(turtle, turtleSvg)
+                renderer.renderPosition()
                 return true
             }
             case 'rotation': {
                 target.rotation = value
-                // gameToolbar.updateRotationValue( radiansToDegrees(value).toFixed(2) )
-                renderFunctions.rotate(turtle, turtleSvg)
+                renderer.renderRotation()
                 return true
             }
         }
@@ -62,8 +61,5 @@ gameContainer.addEventListener('click', (event) => {
     // interpret mouse click as where the user wants the *center* of the turtle to go
     const destinationPosition = new Vector2D(event.clientX - offsetForClickEvent, event.clientY - offsetForClickEvent)
 
-    // const destinationPosition = new Vector2D(event.clientX, event.clientY)
-
     linearMotionIntent.rotateAndMoveToDestination(destinationPosition)
 })
-

@@ -1,16 +1,15 @@
 import { LinearMotionPhysics } from './LinearMotionPhysics.js'
 import { Body2D } from './Body2D.js'
 import { degreesToRadians } from './utils.js'
+import * as dci from './dci.js'
 
 const DEFAULT_SPEED = 200
 
 /**
- * @type {{
- *     move(angleInRadians: number, distance: number, speed: number): void
- *     goToDestination(destinationPosition: Vector2D): void
- * }}
+ * @typedef {Object} RolePlayerContract_linearMotionPhysics {{
+ * @property {(angleInRadians: number, distance: number, speed: number) => void} move
+ * @property {(destinationPosition: Vector2D) => void)} goToDestination
  */
-let RolePlayerContract_linearMotionPhysics
 
 /**
  * Context: Linear Motion Intent
@@ -22,9 +21,9 @@ let RolePlayerContract_linearMotionPhysics
 export function LinearMotionIntent(body, physicsContextDeclaration = LinearMotionPhysics, speed = DEFAULT_SPEED) {
     const physicsContext = new physicsContextDeclaration(body)
 
-    const roleMethods = roles()
-    body = Object.assign(body, roleMethods.body)
-    const linearMotionPhysics = Object.assign(physicsContext, roleMethods.linearMotionPhysics)
+    const bindRole = dci.makeRoleBinder(roles())
+    body = bindRole(body, 'body')
+    const linearMotionPhysics = bindRole(physicsContext, 'linearMotionPhysics')
 
     return {
         /**
@@ -84,9 +83,10 @@ export function LinearMotionIntent(body, physicsContextDeclaration = LinearMotio
                     linearMotionPhysics.move(bearing, distance, speed)
                 },
 
-                moveToDestination(destinationPosition, speed) {
-                    this.goToDestination(destinationPosition, speed)
-                }
+                /**
+                 * @type {(destinationPosition: Vector2D, speed: number) => void}
+                 */
+                moveToDestination: dci.forward
             },
         }
     }

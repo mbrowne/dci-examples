@@ -9,7 +9,7 @@ export class Body2D {
      */
     rotation
     /**
-     * @type {HTMLTemplateElement}
+     * @type {HTMLImageElement} An <img> that renders an SVG graphic
      */
     #shape
 

@@ -1,5 +1,6 @@
 import { Vector2D } from './Vector2D.js'
 import { Body2D } from './Body2D.js'
+import * as dci from './dci.js'
 
 /**
  * Context: Linear Motion Physics
@@ -8,10 +9,10 @@ import { Body2D } from './Body2D.js'
  * @param {Body2D} body 
  */
 export function LinearMotionPhysics(body) {
-    const roleMethods = roles()
+    const bindRole = dci.makeRoleBinder(roles())
     
-    body = Object.assign(body, roleMethods.body)
-    let currentPosition = Object.assign(body.position, roleMethods.currentPosition)
+    body = bindRole(body, 'body')
+    let currentPosition = bindRole(body.position, 'currentPosition')
 
     /**
      * @type {typeof roleMethods.destinationPosition}
@@ -35,11 +36,10 @@ export function LinearMotionPhysics(body) {
          * @param {number} speed
          */
         move(angleInRadians, distance, speed) {
-            // bind roles
             movementDirection = currentPosition.changeAngle(angleInRadians).normalize()
-            Object.assign(movementDirection, roleMethods.movementDirection)
+            bindRole(movementDirection, 'movementDirection')
 
-            currentPosition.animateMovement(distance, speed)
+            currentPosition.animateLinearly(distance, speed)
         },
 
         /**
@@ -48,9 +48,7 @@ export function LinearMotionPhysics(body) {
          * @returns 
          */
         rotateTowardDestination(destinationPos) {
-            // bind role
-            destinationPosition = Object.assign(destinationPos, roleMethods.destinationPosition)
-
+            destinationPosition = bindRole(destinationPos, 'destinationPosition')
             body.rotateTowardDestination()
         },
 
@@ -58,11 +56,10 @@ export function LinearMotionPhysics(body) {
          * @param {Vector2D} destinationPos
          * @param {number} speed
          */
-        goToDestination(destinationPos, speed) {
-            // bind roles
-            destinationPosition = Object.assign(destinationPos, roleMethods.destinationPosition)
+        moveToDestination(destinationPos, speed) {
+            destinationPosition = bindRole(destinationPos, 'destinationPosition')
             movementDirection = destinationPosition.vectorToDestination().normalize()
-            Object.assign(movementDirection, roleMethods.movementDirection)
+            bindRole(movementDirection, 'movementDirection')
 
             currentPosition.moveToDestination(speed)
         },
@@ -84,10 +81,10 @@ export function LinearMotionPhysics(body) {
                  * @param {number} speed 
                  */
                 moveToDestination(speed) {
-                    this.animateLinearMovement( destinationPosition.totalDistanceToMove(), speed )
+                    this.animateLinearly( destinationPosition.totalDistanceToMove(), speed )
                 },
 
-                animateLinearMovement(totalDistanceToMove, speed) {
+                animateLinearly(totalDistanceToMove, speed) {
                     let prevTimestamp = 0
                     let distanceMoved = 0
 
@@ -170,8 +167,7 @@ export function LinearMotionPhysics(body) {
                     this.position = newPosition
                     
                     // re-bind currentPosition role
-                    currentPosition = newPosition
-                    Object.assign(currentPosition, roleMethods.currentPosition)
+                    currentPosition = bindRole(newPosition, 'currentPosition')
                 },
             },
         }
