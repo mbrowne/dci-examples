@@ -30,6 +30,7 @@ renderer.renderRotation()
 
 const offsetForClickEvent = width / 2
 
+// update the UI when the turtle object is updated
 const turtleProxy = new Proxy(turtle, {
     set(target, key, value) {
         switch (key) {
@@ -49,7 +50,6 @@ const turtleProxy = new Proxy(turtle, {
 })
 
 const linearMotionIntent = new LinearMotionIntent(turtleProxy)
-// linearMotionIntent.forward(10)
 
 customElements.define('game-toolbar', GameToolbarComponent)
 const gameToolbar = document.querySelector('game-toolbar')
