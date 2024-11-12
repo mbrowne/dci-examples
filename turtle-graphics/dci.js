@@ -1,4 +1,13 @@
 /**
+ * Returns a function that can be used to bind objects to roles, e.g.:
+ * 
+ *   const bindRole = makeRoleBinder({ body: { rotateClockwise() {...}, ... } })
+ *   bindRole(body, 'body')
+ * 
+ * Note: there is no "un-binding" function for this simple example app.
+ * In a larger or more complex app, an un-binding mechanism would likely be needed
+ * to avoid naming conflicts when the same object plays roles in multiple Contexts.
+ * 
  * @param {Record<string, Function | typeof forward>} roles
  * @returns {<TRole>(rolePlayer: TRole, roleName: string) => TRole}
  */
