@@ -9,6 +9,7 @@
             display: flex;
             flex-direction: column;
             font-family: sans-serif;
+            font-size: clamp(0.9375rem, 0.9158rem + 0.1087vw, 1rem);
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -30,7 +31,7 @@
         }
 
         button, input {
-            font-size: 1rem;
+            font-size: inherit;
         }
 
         game-toolbar {
@@ -41,15 +42,19 @@
             width: 100%;
             z-index: 1;
 
-            form {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-            }
-
             fieldset {
                 border: none;
                 border-bottom: 1px solid lightgray;
-                padding-block: 1rem;
+                margin: 0;
+                padding-block: clamp(0.5625rem, 0.4321rem + 0.6522vw, 0.9375rem);
+            }
+        }
+
+        /* medium breakpoint (tablet, >= 768 px) */
+        @media (min-width: 48em) {
+            form {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
             }
         }
 
