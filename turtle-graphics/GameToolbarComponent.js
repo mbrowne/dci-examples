@@ -16,6 +16,7 @@ export class GameToolbarComponent extends HTMLElement {
         form.backwardBtn.addEventListener('click', this.#backwardClicked)
         form.rotateBtn.addEventListener('click', this.#rotateClicked)
         form.distance.addEventListener('change', this.#distanceChanged)
+        form.rotation.addEventListener('keyup', this.#rotationKeyUp)
         this.#form = form
     }
 
@@ -44,6 +45,12 @@ export class GameToolbarComponent extends HTMLElement {
         // no negative numbers
         if (parseInt(target.value) < 0) {
             target.value = 0
+        }
+    }
+
+    #rotationKeyUp = (e) => {
+        if (e.key === 'Enter') {
+            this.#rotateClicked()
         }
     }
 }
