@@ -6,7 +6,7 @@ import * as dci from './dci.js'
  * Context: Linear Motion Physics
  * The implementation of linear motion
  * 
- * @param {Body2D} body 
+ * @param {Body2D} body
  */
 export function LinearMotionPhysics(body) {
     const bindRole = dci.makeRoleBinder(roles())
@@ -45,7 +45,6 @@ export function LinearMotionPhysics(body) {
         /**
          * Change the rotation of the Body to point to the destination
          * @param {Vector2D} destinationPos 
-         * @returns 
          */
         rotateTowardDestination(destinationPos) {
             destinationPosition = bindRole(destinationPos, 'destinationPosition')
@@ -72,8 +71,7 @@ export function LinearMotionPhysics(body) {
             /**
              * @contract {{
              *     add(vector: Vector2D): Vector2D
-             *     get x(): number
-             *     get y(): number
+             *     changeAngle(angleInRadians: number): void
              * }}
              */
             currentPosition: {
@@ -108,7 +106,13 @@ export function LinearMotionPhysics(body) {
 
                 addDistance(distance) {
                     return movementDirection.calculateNextPosition(distance)
-                }
+                },
+
+                /**
+                 * forward to add() on the role player
+                 * @type {(vector: Vector2D) => Vector2D}
+                 */
+                add: dci.forward,
             },
             
             /**
@@ -137,7 +141,6 @@ export function LinearMotionPhysics(body) {
 
             /**
              * @contract {{
-             *     get angle(): number
              *     multiply(vec: Vector2D): Vector2D
              * }}
              */
