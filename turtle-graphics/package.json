@@ -1,0 +1,17 @@
+{
+  "name": "turtle-graphics-dci",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbrowne/dci-examples.git"
+  },
+  "author": "Matt Browne",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mbrowne/dci-examples/issues"
+  },
+  "homepage": "https://github.com/mbrowne/dci-examples#readme"
+}
