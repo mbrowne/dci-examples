@@ -84,6 +84,7 @@ export function LinearMotionIntent(body, physicsContextDeclaration = LinearMotio
                 },
 
                 /**
+                 * forward to moveToDestination() on the role player
                  * @type {(destinationPosition: Vector2D, speed: number) => void}
                  */
                 moveToDestination: dci.forward
