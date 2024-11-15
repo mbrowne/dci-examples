@@ -1,5 +1,10 @@
 import * as dci from './dci.js'
 
+/**
+ * Context: Render the Body in the UI
+ * 
+ * @param {Body2D} body
+ */
 export function RenderBody2D(body) {
     const bindRole = dci.makeRoleBinder(roles())
     
@@ -18,6 +23,11 @@ export function RenderBody2D(body) {
 
     function roles() {
         return {
+            /**
+             * @contract {{
+             *     set style(styles: CSSStyleDeclaration): void
+             * }}
+             */
             shape: {
                 renderPosition() {
                     this.style.left = body.position.x + 'px'
@@ -29,20 +39,20 @@ export function RenderBody2D(body) {
                 }
             },
 
+            /**
+             * @contract {{
+             *     get position(): Vector2D
+             *     get rotation(): number
+             * }}
+             */
             body: {
                 /**
                  * forward `body.position` getter to the role player
-                 * @type {{
-                 *     get position(): Vector2D
-                 * }}
                  */
                 position: dci.forward,
                 /**
                  * forward `body.rotation` getter to the role player
-                 * @type {{
-                *     get rotation(): number
-                * }}
-                */
+                 */
                 rotation: dci.forward,
             }
         }

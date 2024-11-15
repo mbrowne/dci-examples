@@ -1,3 +1,6 @@
+// This CodeSandbox is a snapshot of code from this repo:
+// https://github.com/mbrowne/dci-examples
+
 import { Vector2D } from './Vector2D.js'
 import { Body2D } from './Body2D.js'
 import { LinearMotionIntent } from './LinearMotionIntent.js'
@@ -11,18 +14,17 @@ const gameContainer = document.querySelector('.game-container')
 const containerWidth = gameContainer.clientWidth
 const containerHeight = gameContainer.clientHeight
 
-const turtle = new Body2D({
-    rotation: 0,
-    shape: turtleSvg
-})
-
 const { width, height } = turtleSvg.getBoundingClientRect()
 const startingPosition = new Vector2D(
     (containerWidth / 2) - (width / 2),
     (containerHeight / 2) - (height / 2)
 )
 
-turtle.position = startingPosition
+const turtle = new Body2D({
+    rotation: 0,
+    shape: turtleSvg,
+    position: startingPosition,
+})
 
 const renderer = RenderBody2D(turtle)
 renderer.renderPosition()
