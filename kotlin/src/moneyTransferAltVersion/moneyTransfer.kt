@@ -1,6 +1,6 @@
 package moneyTransferAltVersion
 
-class Account(private var _balance: Int): MoneySource, moneyTransfer.MoneyDestination {
+class Account(private var _balance: Int): MoneySource, MoneyDestination  {
     override val balance: Int
         get() = _balance
 
@@ -23,46 +23,40 @@ interface MoneyDestination {
     val balance: Int
 }
 
-fun TransferMoneyAltVersion(
+fun TransferMoney(
     source: MoneySource,
-    destination: moneyTransfer.MoneyDestination,
+    destination: MoneyDestination,
     amount: Int
 ) {
-    // <editor-fold desc="roles">
-    class DestinationAccountRole {
-        fun moneyTransfer.MoneyDestination.deposit() {
-            increaseBalance(amount)
-        }
-    }
-
-    class SourceAccountRole {
-        fun MoneySource.transferToDestination() {
-            if (source.balance < destination.balance) {
-                throw IllegalArgumentException("Insufficient funds")
-            }
-            source.withdraw()
-            with (DestinationAccountRole()) {
-                destination.deposit()
-            }
-        }
-
-        private fun MoneySource.withdraw() {
-            decreaseBalance(amount)
-        }
+    // <editor-fold desc="DestinationAccount role">
+    fun MoneyDestination.deposit() {
+        increaseBalance(amount)
     }
     // </editor-fold>
 
-    with (SourceAccountRole()) {
-        source.transferToDestination()
+    // <editor-fold desc="SourceAccount role">
+    fun MoneySource.withdraw() {
+        decreaseBalance(amount)
     }
+
+    fun MoneySource.transferToDestination() {
+        if (balance < destination.balance) {
+            throw IllegalArgumentException("Insufficient funds")
+        }
+        withdraw()
+        destination.deposit()
+    }
+    // </editor-fold>
+
+    source.transferToDestination()
 }
 
 fun main() {
     val sourceAcct = Account(30)
     val destinationAcct = Account(30)
 
-    TransferMoneyAltVersion(sourceAcct, destinationAcct, 10)
+    TransferMoney(sourceAcct, destinationAcct, 10)
 
-    println("sourceAcct balance=${sourceAcct.balance}")
-    println("destinationAcct balance=${destinationAcct.balance}")
+    println("sourceAcct ${sourceAcct.balance}")
+    println("destinationAcct ${destinationAcct.balance}")
 }
