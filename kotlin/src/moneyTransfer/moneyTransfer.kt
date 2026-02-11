@@ -36,9 +36,7 @@ fun TransferMoney(
 
     class SourceAccountRole {
         fun MoneySource.transferToDestination() {
-            if (balance < destination.balance) {
-                throw IllegalArgumentException("Insufficient funds")
-            }
+            require (balance >= destination.balance, {"Insufficient funds"})
             withdraw()
             with (DestinationAccountRole()) {
                 destination.deposit()

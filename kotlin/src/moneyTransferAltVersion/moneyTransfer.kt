@@ -40,9 +40,7 @@ fun TransferMoney(
     }
 
     fun MoneySource.transferToDestination() {
-        if (balance < destination.balance) {
-            throw IllegalArgumentException("Insufficient funds")
-        }
+        require (balance >= destination.balance, {"Insufficient funds"})
         withdraw()
         destination.deposit()
     }
