@@ -1,15 +1,19 @@
 package dijkstra
 
 @JvmInline
-value class Distance(val distance: Float) {
+value class Distance(val distance: Float): Comparable<Distance> {
     init {
-        if (distance < 0) throw IllegalArgumentException()
+        require(distance >= 0)
+    }
+
+    override fun compareTo(other: Distance): Int {
+        return distance.compareTo(other.distance)
+    }
+
+    operator fun plus(other: Distance): Distance {
+        return Distance(distance + other.distance)
     }
 }
-
-//interface INode(
-//    val id: Char
-//): NodeRolePlayer<Char> {}
 
 data class Node<TId>(
     override val id: TId
@@ -45,7 +49,8 @@ class Graph<TNodeId>(): GraphRolePlayer<TNodeId> {
     override fun contains(n: Node<TNodeId>): Boolean = paths.containsKey(n)
 
     override fun distanceBetween(x: Node<TNodeId>, y: Node<TNodeId>): Distance? {
-        val neighbors = paths[x] ?: throw IllegalArgumentException("Node $x not found in graph")
+        val neighbors = paths[x]
+        requireNotNull(neighbors, { "Neighbor $x not found in graph" })
         // note: this might return null, and will always be null for any edges
         // not explicitly defined (we don't create bidirectional edges automatically)
         return neighbors[y]
