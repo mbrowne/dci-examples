@@ -17,7 +17,9 @@ value class Distance(val distance: Float): Comparable<Distance> {
 
 data class Node<TId>(
     override val id: TId
-): NodeRolePlayer<TId> {}
+): NodeRolePlayer<TId> {
+    override fun toString() = id.toString()
+}
 
 data class Edge<TNodeId>(
     val from: Node<TNodeId>,
