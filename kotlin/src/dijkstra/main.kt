@@ -47,6 +47,4 @@ fun main() {
     )
 
     println("Shortest path\n" + shortestPath.joinToString("->"))
-
-//    println("Dijkstra.edges[0] ${edges[0]}")
 }

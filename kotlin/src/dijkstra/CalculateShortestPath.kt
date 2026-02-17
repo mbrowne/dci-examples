@@ -39,201 +39,110 @@ package dijkstra
   node to every visited node.
  */
 
+fun <TNodeId> CalculateShortestPath(
+    graph: GraphRolePlayer<TNodeId>,
+    startNode: NodeRolePlayer<TNodeId>,
+    destinationNode: NodeRolePlayer<TNodeId>
+): List<NodeRolePlayer<TNodeId>> {
+    require(graph.contains(startNode) && graph.contains(destinationNode))
+    return CalculateShortestPathContext(graph, startNode, destinationNode).calculate()
+}
+
+typealias NodeRolePlayer<TId> = Node<TId>
+
 interface GraphRolePlayer<TNodeId> {
-    fun pathsFrom(n: Node<TNodeId>): HashMap<Node<TNodeId>, Distance>?
-    fun contains(n: Node<TNodeId>): Boolean
-    fun distanceBetween(x: Node<TNodeId>, y: Node<TNodeId>): Distance?
-    val nodes: Set<Node<TNodeId>>
+    fun pathsFrom(n: NodeRolePlayer<TNodeId>): Map<NodeRolePlayer<TNodeId>, Distance>?
+    fun contains(n: NodeRolePlayer<TNodeId>): Boolean
+    fun distanceBetween(x: NodeRolePlayer<TNodeId>, y: NodeRolePlayer<TNodeId>): Distance?
+    val nodes: Set<NodeRolePlayer<TNodeId>>
 }
-
-interface NodeRolePlayer<out T> {
-    val id: T
-}
-
-typealias NodeRolePlayerAny = NodeRolePlayer<Any>
-typealias UnvisitedNodesRolePlayer = MutableSet<NodeRolePlayerAny>
-typealias TentativeDistancesRolePlayer = MutableMap<NodeRolePlayerAny, Distance>
-
-fun <TNodeId : Any> CalculateShortestPath(
-    Graph: GraphRolePlayer<TNodeId>,
-    StartNode: NodeRolePlayerAny,
-    DestinationNode: NodeRolePlayerAny
-): List<NodeRolePlayerAny> {
-    require(Graph.contains(StartNode as Node<TNodeId>) && Graph.contains(DestinationNode as Node<TNodeId>))
-
-    return CalculateShortestPathContext(
-        Graph, StartNode, DestinationNode
-    ).calculate()
-}
-
-typealias ShortestPathSegmentsRolePlayer = HashMap<NodeRolePlayerAny, NodeRolePlayerAny>
 
 private class CalculateShortestPathContext<TNodeId>(
-    val Graph: GraphRolePlayer<TNodeId>,
-    val StartNode: NodeRolePlayer<TNodeId>,
-    val DestinationNode: NodeRolePlayer<TNodeId>,
+    val graph: GraphRolePlayer<TNodeId>,
+    val startNode: NodeRolePlayer<TNodeId>,
+    val destinationNode: NodeRolePlayer<TNodeId>,
 ) {
-    val UnvisitedNodes = Graph.nodes.toMutableSet() as MutableSet<NodeRolePlayerAny>
-    val ShortestPathSegments: ShortestPathSegmentsRolePlayer = ShortestPathSegmentsRolePlayer()
-    var CurrentNode = StartNode
-    lateinit var NeighborNode: NodeRolePlayerAny
+    val unvisitedNodes = graph.nodes.toMutableSet()
+    val shortestPathSegments = mutableMapOf<NodeRolePlayer<TNodeId>, NodeRolePlayer<TNodeId>>()
+    val tentativeDistances = mutableMapOf<NodeRolePlayer<TNodeId>, Distance>()
+        .apply {
+            graph.nodes.forEach { this[it] = Distance.Infinity }
+            this[startNode] = Distance(0f)
+        }
 
-    val TentativeDistances: TentativeDistancesRolePlayer = mutableMapOf<NodeRolePlayerAny, Distance>(
-        StartNode as NodeRolePlayerAny to Distance(0f)
-    )
+    var currentNode = startNode
 
-    fun calculate(): List<NodeRolePlayerAny> {
+    fun calculate(): List<NodeRolePlayer<TNodeId>> {
         with(CurrentNodeRole()) {
-            CurrentNode.markVisited()
-        }
-        for (n in UnvisitedNodes) {
-            with(TentativeDistancesRole()) {
-                TentativeDistances.setDistanceTo(n, Distance(Float.POSITIVE_INFINITY))
+            while (unvisitedNodes.contains(destinationNode)) {
+                currentNode.traverse()
+
+                val nextNode = unvisitedNodes.minByOrNull { tentativeDistances.getValue(it) }
+                // break if no reachable nodes left or destination reached
+                if (nextNode == null || tentativeDistances[nextNode] == Distance.Infinity) {
+                    break
+                }
+                currentNode = nextNode
             }
         }
+        return buildPath()
+    }
 
-        // Start: calculate the shortest path
-        with(CurrentNodeRole()) {
-            var nextUnvisitedNode: NodeRolePlayerAny?
-            while (run {
-                nextUnvisitedNode = CurrentNode.traverse()
-                nextUnvisitedNode != null
-            }) {
-                CurrentNode = nextUnvisitedNode as NodeRolePlayer<TNodeId>
-            }
+    private fun buildPath(): List<NodeRolePlayer<TNodeId>> {
+        val prevNodes = generateSequence(destinationNode) {
+            shortestPathSegments[it]
         }
+        val path = prevNodes
+            .take(graph.nodes.size) // safety break: path can't be longer than total nodes
+            .toList()
+            .reversed() // put the nodes in order
 
-        val segments = mutableListOf<NodeRolePlayerAny>()
-        var n = DestinationNode as NodeRolePlayerAny
-        with (ShortestPathSegmentsRole()) {
-            while (n != StartNode) {
-                segments.add(n)
-                n = ShortestPathSegments.previous(n)
+        return if (path.firstOrNull() == startNode) path else emptyList()
+    }
+
+    // --- Roles ---
+
+    inner class CurrentNodeRole {
+        fun NodeRolePlayer<TNodeId>.traverse() {
+            val neighbors = with(GraphRole()) {
+                graph.unvisitedNeighborsOf(currentNode)
             }
-        }
 
-        return (listOf(StartNode) + segments.reversed()) as List<NodeRolePlayerAny>
+            for (neighbor in neighbors) {
+                with(NeighborNodeRole()) {
+                    neighbor.evaluateShortestPath()
+                }
+            }
+            unvisitedNodes.remove(this)
+        }
     }
 
     inner class GraphRole {
-        // fun GraphRolePlayer.distanceBetween(from: Node, to: Node): Distance = this.distanceBetween(from, to)
-        fun GraphRolePlayer<TNodeId>.distanceBetweenNodes(
-            from: NodeRolePlayer<TNodeId>,
-            to: NodeRolePlayer<TNodeId>
-        ): Distance {
-            val dist = distanceBetween(from as Node<TNodeId>, to as Node<TNodeId>)
-            require(dist != null)
-            return dist
+        fun GraphRolePlayer<TNodeId>.unvisitedNeighborsOf(n: NodeRolePlayer<TNodeId>): List<NodeRolePlayer<TNodeId>> {
+            return (pathsFrom(n)?.keys ?: emptySet()).filter { it in unvisitedNodes }
         }
 
-        fun GraphRolePlayer<TNodeId>.neighborsOf(n: NodeRolePlayer<TNodeId>): Set<NodeRolePlayer<TNodeId>> {
-            val paths = pathsFrom(n as Node<TNodeId>)
-            requireNotNull(paths, { "Path map missing for node $n" })
-            return paths.keys as Set<NodeRolePlayer<TNodeId>>
-        }
-    }
-
-    inner class CurrentNodeRole {
-        // visit this node, and determine the next closest unvisited node from the start
-        fun NodeRolePlayer<TNodeId>.traverse(): NodeRolePlayerAny? {
-            markVisited()
-            with(UnvisitedNodesRole()) {
-                if (!UnvisitedNodes.hasNode(DestinationNode as NodeRolePlayerAny)) {
-                    return null;
-                }
-            }
-            return findClosestUnvisitedNode()
-        }
-
-        private fun NodeRolePlayer<TNodeId>.unvisitedNeighbors(): List<NodeRolePlayer<TNodeId>> {
-            with(GraphRole()) {
-                Graph.neighborsOf(CurrentNode)
-                return Graph.neighborsOf(CurrentNode).filter {
-                    with(UnvisitedNodesRole()) {
-                        UnvisitedNodes.hasNode(it as NodeRolePlayerAny)
-                    }
-                }
-            }
-        }
-
-        private fun NodeRolePlayer<TNodeId>.determinePreviousInPath() {
-            for (neighbor in unvisitedNeighbors()) {
-                NeighborNode = neighbor as NodeRolePlayerAny
-                with (NeighborNodeRole()) {
-                    if ((neighbor as NodeRolePlayerAny).shorterPathAvailable()) {
-                        ShortestPathSegments[neighbor] = CurrentNode as NodeRolePlayerAny
-                    }
-                }
-            }
-        }
-
-        private fun NodeRolePlayer<TNodeId>.findClosestUnvisitedNode(): NodeRolePlayerAny? {
-            determinePreviousInPath()
-            if (UnvisitedNodes.isEmpty()) {
-                return null
-            }
-            return UnvisitedNodes.minBy { node ->
-                with(TentativeDistancesRole()) {
-                    TentativeDistances.distanceTo(node)
-                }
-            }
-        }
-
-        fun NodeRolePlayer<TNodeId>.markVisited() {
-            UnvisitedNodes.remove(this as NodeRolePlayerAny)
-        }
-
-        fun NodeRolePlayer<TNodeId>.distanceTo(neighbor: NodeRolePlayerAny): Distance =
-            with(GraphRole()) {
-                Graph.distanceBetweenNodes(CurrentNode, neighbor as NodeRolePlayer<TNodeId>)
-            }
-    }
-
-    class UnvisitedNodesRole {
-        fun UnvisitedNodesRolePlayer.removeNode(node: NodeRolePlayerAny) {
-            remove(node)
-        }
-
-        fun UnvisitedNodesRolePlayer.hasNode(node: NodeRolePlayerAny): Boolean {
-            return contains(node)
-        }
-    }
-
-    class TentativeDistancesRole {
-        fun TentativeDistancesRolePlayer.distanceTo(node: NodeRolePlayerAny): Distance = this.getValue(node)
-
-        fun TentativeDistancesRolePlayer.setDistanceTo(node: NodeRolePlayerAny, distance: Distance) {
-            this[node] = distance
+        fun GraphRolePlayer<TNodeId>.distanceBetweenNodes(from: Node<TNodeId>, to: Node<TNodeId>): Distance {
+            return distanceBetween(from, to)!!
         }
     }
 
     inner class NeighborNodeRole {
         /**
-         * Is there a shorter path (from the start node to this node) than previously determined?
+         * Is there a shorter path (from the start node to this neighbor node) than previously determined?
          */
-        fun NodeRolePlayerAny.shorterPathAvailable(): Boolean {
-            val distanceFromStartToCurrent: Distance
-            val netDistance: Distance
-            with (TentativeDistancesRole()) {
-                distanceFromStartToCurrent = TentativeDistances.distanceTo(CurrentNode as NodeRolePlayerAny)
+        fun NodeRolePlayer<TNodeId>.evaluateShortestPath() {
+            val distanceFromStartToCurrent = tentativeDistances.getValue(currentNode)
+            val neighborNode = this
+            val distanceToNeighbor = with (GraphRole()) {
+                graph.distanceBetweenNodes(currentNode, neighborNode)
             }
-            with (CurrentNodeRole()) {
-                netDistance = distanceFromStartToCurrent + CurrentNode.distanceTo(NeighborNode)
-            }
+            val newTotalDist = distanceFromStartToCurrent + distanceToNeighbor
 
-            with (TentativeDistancesRole()) {
-                val distanceToSelf = TentativeDistances.distanceTo(NeighborNode)
-                if (netDistance < distanceToSelf) {
-                    TentativeDistances.setDistanceTo(NeighborNode, netDistance)
-                    return true
-                }
-                return false
+            if (newTotalDist < (tentativeDistances[this] ?: Distance.Infinity)) {
+                tentativeDistances[this] = newTotalDist
+                shortestPathSegments[this] = currentNode
             }
         }
-    }
-
-    class ShortestPathSegmentsRole {
-        fun ShortestPathSegmentsRolePlayer.previous(n: NodeRolePlayerAny) =
-            getValue(n)
     }
 }
