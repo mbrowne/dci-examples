@@ -7,7 +7,7 @@ fun main() {
      * A fictional section of the street grid of Manhattan.
      * Avenues run east to west and are longer than streets, which run north to south.
      *
-     * The numbers (weights) of the Dijkstra.graph represent traffic that makes that path slower.
+     * The numbers (weights) of the graph represent traffic that makes that path slower.
      *
      *    a - 3 - b - 4 - c
      *    |       |       |

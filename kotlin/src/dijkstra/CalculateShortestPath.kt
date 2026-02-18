@@ -65,9 +65,9 @@ private class CalculateShortestPathContext<TNodeId>(
     val unvisitedNodes = graph.nodes.toMutableSet()
     val shortestPathSegments = mutableMapOf<NodeRolePlayer<TNodeId>, NodeRolePlayer<TNodeId>>()
     val tentativeDistances = mutableMapOf<NodeRolePlayer<TNodeId>, Distance>()
-        .apply {
-            graph.nodes.forEach { this[it] = Distance.Infinity }
-            this[startNode] = Distance(0f)
+        .also { distances ->
+            graph.nodes.forEach { distances[it] = Distance.Infinity }
+            distances[startNode] = Distance(0f)
         }
 
     var currentNode = startNode
@@ -107,11 +107,8 @@ private class CalculateShortestPathContext<TNodeId>(
             val neighbors = with(GraphRole()) {
                 graph.unvisitedNeighborsOf(currentNode)
             }
-
-            for (neighbor in neighbors) {
-                with(NeighborNodeRole()) {
-                    neighbor.evaluateShortestPath()
-                }
+            with(NeighborNodeRole()) {
+                neighbors.forEach { it.evaluateShortestPath() }
             }
             unvisitedNodes.remove(this)
         }
