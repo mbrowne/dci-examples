@@ -73,17 +73,17 @@ private class CalculateShortestPathContext<TNodeId>(
     var currentNode = startNode
 
     fun calculate(): List<NodeRolePlayer<TNodeId>> {
-        with(CurrentNodeRole()) {
-            while (unvisitedNodes.contains(destinationNode)) {
+        while (unvisitedNodes.contains(destinationNode)) {
+            with(CurrentNodeRole()) {
                 currentNode.traverse()
-
-                val nextNode = unvisitedNodes.minByOrNull { tentativeDistances.getValue(it) }
-                // break if no reachable nodes left or destination reached
-                if (nextNode == null || tentativeDistances[nextNode] == Distance.Infinity) {
-                    break
-                }
-                currentNode = nextNode
             }
+
+            val nextNode = unvisitedNodes.minByOrNull { tentativeDistances.getValue(it) }
+            // break if no reachable nodes left or destination reached
+            if (nextNode == null || tentativeDistances[nextNode] == Distance.Infinity) {
+                break
+            }
+            currentNode = nextNode
         }
         return buildPath()
     }
