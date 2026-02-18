@@ -17,11 +17,11 @@ data class Node<out TId>(val id: TId) {
 
 data class Edge<TNodeId>(val from: Node<TNodeId>, val to: Node<TNodeId>, val distance: Distance)
 
-class Graph<TNodeId> : GraphRolePlayer<TNodeId> {
+class Graph<TNodeId>(edges: Array<Edge<TNodeId>>) : GraphRolePlayer<TNodeId> {
     private val paths: Map<Node<TNodeId>, Map<Node<TNodeId>, Distance>>
     override val nodes: Set<Node<TNodeId>> get() = paths.keys
 
-    constructor(edges: Array<Edge<TNodeId>>) {
+    init {
         val pathMaps = mutableMapOf<Node<TNodeId>, MutableMap<Node<TNodeId>, Distance>>()
         for (edge in edges) {
             // ensure path map is created
