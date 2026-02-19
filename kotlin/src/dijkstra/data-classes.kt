@@ -19,7 +19,7 @@ data class Edge<TNodeId>(val from: Node<TNodeId>, val to: Node<TNodeId>, val dis
 
 class Graph<TNodeId>(edges: Array<Edge<TNodeId>>) : GraphRolePlayer<TNodeId> {
     private val paths: Map<Node<TNodeId>, Map<Node<TNodeId>, Distance>>
-    override val nodes: Set<Node<TNodeId>> get() = paths.keys
+    val nodes: Set<Node<TNodeId>> get() = paths.keys
 
     init {
         val pathMaps = mutableMapOf<Node<TNodeId>, MutableMap<Node<TNodeId>, Distance>>()
@@ -32,7 +32,7 @@ class Graph<TNodeId>(edges: Array<Edge<TNodeId>>) : GraphRolePlayer<TNodeId> {
         paths = pathMaps
     }
 
+    fun contains(n: Node<TNodeId>) = paths.containsKey(n)
     override fun pathsFrom(n: Node<TNodeId>) = paths[n]
-    override fun contains(n: Node<TNodeId>) = paths.containsKey(n)
     override fun distanceBetween(x: Node<TNodeId>, y: Node<TNodeId>) = paths[x]?.get(y)
 }
