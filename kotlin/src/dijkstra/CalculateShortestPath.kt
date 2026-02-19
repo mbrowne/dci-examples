@@ -40,7 +40,7 @@ package dijkstra
  */
 
 fun <TNodeId> CalculateShortestPath(
-    graph: GraphRolePlayer<TNodeId>,
+    graph: Graph<TNodeId>,
     startNode: NodeRolePlayer<TNodeId>,
     destinationNode: NodeRolePlayer<TNodeId>
 ): List<NodeRolePlayer<TNodeId>> {
@@ -52,13 +52,11 @@ typealias NodeRolePlayer<TId> = Node<TId>
 
 interface GraphRolePlayer<TNodeId> {
     fun pathsFrom(n: NodeRolePlayer<TNodeId>): Map<NodeRolePlayer<TNodeId>, Distance>?
-    fun contains(n: NodeRolePlayer<TNodeId>): Boolean
     fun distanceBetween(x: NodeRolePlayer<TNodeId>, y: NodeRolePlayer<TNodeId>): Distance?
-    val nodes: Set<NodeRolePlayer<TNodeId>>
 }
 
 private class CalculateShortestPathContext<TNodeId>(
-    val graph: GraphRolePlayer<TNodeId>,
+    val graph: Graph<TNodeId>,
     val startNode: NodeRolePlayer<TNodeId>,
     val destinationNode: NodeRolePlayer<TNodeId>,
 ) {
