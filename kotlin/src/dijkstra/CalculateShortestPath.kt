@@ -55,6 +55,11 @@ interface GraphRolePlayer<TNodeId> {
     fun distanceBetween(x: NodeRolePlayer<TNodeId>, y: NodeRolePlayer<TNodeId>): Distance?
 }
 
+/**
+ * Note: this class was originally created to allow for a circular dependency between CurrentNode and NeighborNode, since
+ * that didn't work within the function above. The implementation has since been refactored so that it would actually
+ * work either way now, but this is still a useful example of how class contexts can be used.
+ */
 private class CalculateShortestPathContext<TNodeId>(
     val graph: Graph<TNodeId>,
     val startNode: NodeRolePlayer<TNodeId>,
